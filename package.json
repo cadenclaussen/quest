@@ -1,0 +1,42 @@
+{
+    "name": "quest",
+    "version": "1.0.0",
+    "description": "AI development environment with Python, LangChain, LangGraph, and modern dev tools",
+    "main": "src/hello_langchain.py",
+    "scripts": {
+        "dev": "streamlit run src/app.py --server.port 8501",
+        "jupyter": "jupyter lab --ip=0.0.0.0 --port=8888 --no-browser --allow-root",
+        "test": "pytest src/ -v --cov=src --cov-report=term-missing",
+        "lint": "black src/ && isort src/ && flake8 src/",
+        "format": "black src/ && isort src/",
+        "docker:build": "docker build -t quest-dev -f .devcontainer/Dockerfile .",
+        "docker:run": "docker run -it --rm -v $(pwd):/workspace quest-dev bash",
+        "docker:ecr:login": "aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin",
+        "docker:ecr:build": "docker build -t quest .",
+        "docker:ecr:tag": "docker tag quest:latest ${ECR_REPOSITORY}:latest",
+        "docker:ecr:push": "docker push ${ECR_REPOSITORY}:latest",
+        "clean": "find . -name '*.pyc' -delete && find . -name '__pycache__' -type d -exec rm -rf {} +",
+        "security": "safety check && bandit -r src/"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/your-username/quest.git"
+    },
+    "keywords": [
+        "ai",
+        "langchain",
+        "langraph",
+        "python",
+        "devcontainer",
+        "aws",
+        "docker"
+    ],
+    "author": "",
+    "license": "ISC",
+    "engines": {
+        "node": ">=18.0.0",
+        "python": ">=3.9.0"
+    },
+    "devDependencies": {},
+    "dependencies": {}
+}

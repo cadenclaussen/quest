@@ -1,0 +1,1 @@
+Analyze the project changes since the last release, determine an appropriate semantic version number, create a release with detailed changelog, and tag the repository.

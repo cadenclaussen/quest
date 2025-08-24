@@ -1,0 +1,1 @@
+Create a pull request by analyzing the current branch changes, generating an appropriate title and description based on the commits and code changes, then use GitHub CLI to create the PR.

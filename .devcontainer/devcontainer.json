@@ -1,0 +1,87 @@
+{
+    // Display name shown in VS Code for this dev container
+    "name": "Quest",
+    // Tells VS Code to build the container using our custom Dockerfile
+    "build": {
+        "dockerfile": "Dockerfile"
+    },
+    // Pre-built features from Microsoft's dev container registry
+    "features": {
+        // Installs Git version control system
+        "ghcr.io/devcontainers/features/git:1": {},
+        // Installs GitHub CLI for repository management
+        "ghcr.io/devcontainers/features/github-cli:1": {},
+        // Installs Node.js (latest LTS version) for web development
+        "ghcr.io/devcontainers/features/node:1": {
+            "version": "lts"
+        }
+    },
+    // VS Code specific customizations
+    "customizations": {
+        "vscode": {
+            // Extensions automatically installed when container starts
+            "extensions": [
+                "ms-python.python", // Core Python language support
+                "ms-python.flake8", // Python linting for code quality
+                "ms-python.black-formatter", // Auto-formats Python code
+                "ms-python.isort", // Organizes Python imports
+                "ms-toolsai.jupyter", // Jupyter notebook support
+                "christian-kohler.path-intellisense", // Auto-completes file paths
+                "ms-vscode.vscode-json" // Enhanced JSON editing
+            ],
+            // VS Code settings applied inside the container
+            "settings": {
+                // Path to Python interpreter in the container
+                "python.defaultInterpreterPath": "/usr/local/bin/python",
+                // Enable Python linting (error checking)
+                "python.linting.enabled": true,
+                // Use flake8 as the linter
+                "python.linting.flake8Enabled": true,
+                // Use Black as the code formatter
+                "python.formatting.provider": "black",
+                // Auto-format files when saved
+                "editor.formatOnSave": true,
+                // Auto-organize imports when saved
+                "editor.codeActionsOnSave": {
+                    "source.organizeImports": true
+                },
+                // Use bash as default terminal in the container
+                "terminal.integrated.defaultProfile.linux": "bash",
+                // Language-specific indentation settings
+                "[python]": {
+                    "editor.tabSize": 4,
+                    "editor.insertSpaces": true
+                },
+                "[json]": {
+                    "editor.tabSize": 4,
+                    "editor.insertSpaces": true
+                },
+                "[jsonc]": {
+                    "editor.tabSize": 4,
+                    "editor.insertSpaces": true
+                },
+                "[yaml]": {
+                    "editor.tabSize": 4,
+                    "editor.insertSpaces": true
+                }
+            }
+        }
+    },
+    // Ports forwarded from container to your local machine
+    // 3000: React/Next.js dev server
+    // 8000: FastAPI/Django default
+    // 8080: Alternative web server
+    // 5000: Flask default
+    // 7860: Gradio default
+    "forwardPorts": [
+        3000,
+        8000,
+        8080,
+        5000,
+        7860
+    ],
+    // Command run after container is created (installs Python packages)
+    "postCreateCommand": "pip install --upgrade pip && pip install langchain langsmith langchain-community langchain-openai langchain-anthropic langraph streamlit gradio fastapi uvicorn requests pandas numpy matplotlib seaborn jupyter notebook jupyterlab",
+    // User account to use inside the container (non-root for security)
+    "remoteUser": "vscode"
+}

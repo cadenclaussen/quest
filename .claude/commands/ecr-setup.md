@@ -1,0 +1,1 @@
+Set up Amazon ECR repository for this project, configure AWS CLI authentication, create the necessary IAM policies and roles, and provide the Docker push commands.

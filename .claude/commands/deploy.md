@@ -1,0 +1,1 @@
+Build the Docker container, tag it appropriately for AWS ECR, push to Amazon ECR registry, and provide deployment commands for AWS services like ECS or EKS.

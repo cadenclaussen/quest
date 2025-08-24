@@ -1,0 +1,128 @@
+name: Issue Management
+
+on:
+    issues:
+        types: [opened, edited, labeled, unlabeled]
+    issue_comment:
+        types: [created, edited]
+    pull_request:
+        types: [opened, edited, labeled, unlabeled, ready_for_review]
+
+jobs:
+    auto-label:
+        runs-on: ubuntu-latest
+        if: github.event.action == 'opened'
+        steps:
+            - uses: actions/checkout@v4
+
+            - name: Auto-label issues
+              uses: github/issue-labeler@v3.4
+              with:
+                  repo-token: "${{ secrets.GITHUB_TOKEN }}"
+                  configuration-path: .github/labeler.yml
+
+    triage-new-issues:
+        runs-on: ubuntu-latest
+        if: github.event.action == 'opened' && github.event_name == 'issues'
+        steps:
+            - name: Add to triage project
+              uses: actions/add-to-project@v0.5.0
+              with:
+                  project-url: https://github.com/users/${{ github.repository_owner }}/projects/1
+                  github-token: ${{ secrets.GITHUB_TOKEN }}
+
+            - name: Welcome new contributors
+              uses: actions/github-script@v7
+              with:
+                  script: |
+                      const author = context.payload.issue.user.login;
+                      const issue_number = context.payload.issue.number;
+                      
+                      // Check if this is the user's first issue
+                      const issues = await github.rest.issues.listForRepo({
+                          owner: context.repo.owner,
+                          repo: context.repo.repo,
+                          creator: author,
+                          state: 'all'
+                      });
+                      
+                      if (issues.data.length === 1) {
+                          await github.rest.issues.createComment({
+                              owner: context.repo.owner,
+                              repo: context.repo.repo,
+                              issue_number: issue_number,
+                              body: `👋 Welcome @${author}! Thank you for opening your first issue. 
+                              
+                              Our team will review this shortly. In the meantime:
+                              - Make sure you've provided all necessary details
+                              - Check our [Contributing Guidelines](./CONTRIBUTING.md) if you plan to submit a PR
+                              - Join our discussions for questions and support`
+                          });
+                      }
+
+    stale-issue-handler:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/stale@v9
+              with:
+                  repo-token: ${{ secrets.GITHUB_TOKEN }}
+                  stale-issue-message: |
+                      This issue has been automatically marked as stale because it has not had recent activity.
+                      It will be closed if no further activity occurs within 7 days.
+                      If this is still relevant, please comment to keep it open.
+                  stale-pr-message: |
+                      This pull request has been automatically marked as stale because it has not had recent activity.
+                      It will be closed if no further activity occurs within 7 days.
+                      If this is still relevant, please comment to keep it open.
+                  stale-issue-label: 'stale'
+                  stale-pr-label: 'stale'
+                  days-before-stale: 30
+                  days-before-close: 7
+                  exempt-issue-labels: 'keep-open,enhancement,security'
+                  exempt-pr-labels: 'keep-open,work-in-progress'
+
+    assign-reviewers:
+        runs-on: ubuntu-latest
+        if: github.event.action == 'opened' && github.event_name == 'pull_request'
+        steps:
+            - name: Auto-assign reviewers
+              uses: actions/github-script@v7
+              with:
+                  script: |
+                      const pr = context.payload.pull_request;
+                      const author = pr.user.login;
+                      
+                      // Don't assign reviewers to draft PRs
+                      if (pr.draft) {
+                          return;
+                      }
+                      
+                      // Auto-assign based on file changes
+                      const files = await github.rest.pulls.listFiles({
+                          owner: context.repo.owner,
+                          repo: context.repo.repo,
+                          pull_number: pr.number
+                      });
+                      
+                      let reviewers = [];
+                      const fileNames = files.data.map(f => f.filename);
+                      
+                      // Add logic to assign reviewers based on changed files
+                      if (fileNames.some(f => f.includes('.github/'))) {
+                          reviewers.push('workflow-reviewer'); // Replace with actual username
+                      }
+                      if (fileNames.some(f => f.includes('src/'))) {
+                          reviewers.push('code-reviewer'); // Replace with actual username
+                      }
+                      
+                      // Remove author from reviewers list
+                      reviewers = reviewers.filter(r => r !== author);
+                      
+                      if (reviewers.length > 0) {
+                          await github.rest.pulls.requestReviewers({
+                              owner: context.repo.owner,
+                              repo: context.repo.repo,
+                              pull_number: pr.number,
+                              reviewers: reviewers
+                          });
+                      }

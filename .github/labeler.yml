@@ -1,0 +1,94 @@
+# Configuration for auto-labeling issues and PRs
+
+# Bug-related keywords
+bug:
+    - 'bug'
+    - 'error'
+    - 'issue'
+    - 'problem'
+    - 'broken'
+    - 'fix'
+    - 'crash'
+    - 'fail'
+
+# Feature requests
+enhancement:
+    - 'feature'
+    - 'enhancement'
+    - 'request'
+    - 'add'
+    - 'implement'
+    - 'support'
+    - 'would like'
+    - 'could we'
+
+# Documentation
+documentation:
+    - 'docs'
+    - 'documentation'
+    - 'readme'
+    - 'guide'
+    - 'tutorial'
+    - 'example'
+    - 'instructions'
+
+# LangChain specific
+langchain:
+    - 'langchain'
+    - 'llm'
+    - 'chain'
+    - 'prompt'
+    - 'openai'
+    - 'anthropic'
+
+# LangGraph specific  
+langraph:
+    - 'langraph'
+    - 'graph'
+    - 'workflow'
+    - 'state'
+    - 'node'
+    - 'edge'
+
+# Python related
+python:
+    - 'python'
+    - 'pip'
+    - 'poetry'
+    - 'pytest'
+    - 'black'
+    - 'flake8'
+
+# DevContainer/Docker
+devcontainer:
+    - 'devcontainer'
+    - 'docker'
+    - 'container'
+    - 'dockerfile'
+    - 'vscode'
+
+# CI/CD
+ci-cd:
+    - 'github actions'
+    - 'workflow'
+    - 'ci'
+    - 'cd'
+    - 'pipeline'
+    - 'deploy'
+
+# Help wanted
+help-wanted:
+    - 'help wanted'
+    - 'help needed' 
+    - 'good first issue'
+    - 'beginner'
+    - 'easy'
+
+# Questions
+question:
+    - 'question'
+    - 'how to'
+    - 'how do i'
+    - 'help'
+    - 'support'
+    - 'ask'

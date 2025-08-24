@@ -1,0 +1,158 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Environment variables
+.env.local
+.env.development
+.env.test
+.env.production
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# pytest
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.nox/
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Docker
+.dockerignore
+
+# macOS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Windows
+*.exe
+*.msi
+*.msix
+*.msm
+*.msp
+
+# Linux
+*~
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Node.js (if using)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Package files
+*.tgz
+*.tar.gz
+
+# Security
+*.pem
+*.key
+*.crt
+*.p12
+*.pfx
+
+# Temporary files
+tmp/
+temp/
+.tmp/
+
+# AI/ML specific
+models/
+data/
+datasets/
+checkpoints/
+*.model
+*.pkl
+*.joblib
+*.h5
+*.hdf5
+
+# LangChain specific
+.langchain/
+langchain.db
+vector_store/
+
+# Streamlit
+.streamlit/
+
+# Gradio
+gradio_cached_examples/
+
+# Claude Code (keep settings but ignore sensitive data)
+.claude/cache/
+.claude/logs/
+.claude/temp/
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# Backup files
+*.bak
+*.backup
+*.old
+
+# Project specific
+output/
+results/
+experiments/

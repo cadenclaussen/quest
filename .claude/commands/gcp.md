@@ -1,0 +1,1 @@
+Analyze the current git repository state and create an intelligent commit message, then commit and push the changes to the remote repository. Handle pulling if required and provide detailed feedback about the process.

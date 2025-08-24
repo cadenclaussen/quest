@@ -1,0 +1,55 @@
+{
+    "permissions": {
+        "allow_file_operations": true,
+        "allow_shell_commands": true,
+        "allow_network_access": true,
+        "allow_environment_variables": true,
+        "allow_system_modifications": true,
+        "allow_package_installation": true,
+        "allow_docker_operations": true,
+        "allow_git_operations": true,
+        "allow_github_operations": true
+    },
+    "behavior": {
+        "auto_save_on_edit": true,
+        "confirm_destructive_operations": false,
+        "enable_hooks": true,
+        "verbose_logging": true,
+        "auto_format_on_save": true,
+        "enable_notifications": true
+    },
+    "development": {
+        "enable_debug_mode": false,
+        "log_level": "info",
+        "max_file_size_mb": 50,
+        "backup_before_edit": false,
+        "auto_install_dependencies": true
+    },
+    "integrations": {
+        "github_cli": true,
+        "docker": true,
+        "jupyter": true,
+        "streamlit": true,
+        "gradio": true,
+        "langchain": true,
+        "pytest": true
+    },
+    "file_handling": {
+        "auto_create_directories": true,
+        "preserve_file_permissions": true,
+        "handle_large_files": true,
+        "enable_file_watching": true
+    },
+    "security": {
+        "scan_for_secrets": true,
+        "warn_on_sensitive_files": false,
+        "allow_sudo_commands": true,
+        "require_confirmation_for_rm": false
+    },
+    "ui": {
+        "show_progress_indicators": true,
+        "use_colors": true,
+        "enable_emojis": true,
+        "compact_output": false
+    }
+}
