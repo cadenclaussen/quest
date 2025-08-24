@@ -9,10 +9,9 @@ A simple demonstration of LangChain basics including:
 - Basic conversation
 """
 
-from langchain.llms import OpenAI
+from langchain_anthropic import ChatAnthropic
 from langchain.prompts import PromptTemplate
 from langchain.chains import LLMChain
-from langchain.schema import HumanMessage
 import os
 from dotenv import load_dotenv
 
@@ -25,16 +24,17 @@ def main():
     print("🦜 LangChain Hello World Application")
     print("=" * 40)
     
-    # Initialize OpenAI LLM (requires OPENAI_API_KEY in environment)
+    # Initialize Anthropic LLM (requires ANTHROPIC_API_KEY in environment)
     try:
-        llm = OpenAI(
+        llm = ChatAnthropic(
+            model="claude-3-5-sonnet-20241022",
             temperature=0.7,
             max_tokens=100
         )
-        print("✅ LLM initialized successfully")
+        print("✅ Anthropic Claude LLM initialized successfully")
     except Exception as e:
         print(f"❌ Failed to initialize LLM: {e}")
-        print("💡 Make sure to set OPENAI_API_KEY in your environment")
+        print("💡 Make sure to set ANTHROPIC_API_KEY in your environment")
         return
     
     # Create a simple prompt template
@@ -57,7 +57,7 @@ def main():
         
         result = chain.run(name=name)
         
-        print(f"\n🤖 AI Response:")
+        print(f"\n🤖 Claude Response:")
         print("-" * 20)
         print(result.strip())
         print("-" * 20)
