@@ -1,85 +1,58 @@
 {
-    // Display name shown in VS Code for this dev container
     "name": "Quest",
-    // Tells VS Code to build the container using our custom Dockerfile
-    "build": {
-        "dockerfile": "Dockerfile",
-        "context": ".."
-    },
-    // Pre-built features from Microsoft's dev container registry
+    "image": "mcr.microsoft.com/devcontainers/python:3.11",
     "features": {
-        // Installs Git version control system
         "ghcr.io/devcontainers/features/git:1": {},
-        // Installs GitHub CLI for repository management
-        "ghcr.io/devcontainers/features/github-cli:1": {}
+        "ghcr.io/devcontainers/features/github-cli:1": {},
+        "ghcr.io/devcontainers/features/node:1": {
+            "nodeGypDependencies": true,
+            "version": "lts"
+        },
+        "ghcr.io/anthropics/devcontainer-features/claude-code:1.0": {},
+        "ghcr.io/devcontainers/features/python:1": {
+            "installTools": true,
+            "version": "none"
+        },
+        "ghcr.io/devcontainers/features/common-utils:2": {
+            "installZsh": true,
+            "installOhMyZsh": true,
+            "upgradePackages": true,
+            "username": "vscode",
+            "uid": "1000",
+            "gid": "1000"
+        },
+        "ghcr.io/devcontainers/features/aws-cli:1": {},
+        "ghcr.io/va-h/devcontainers-features/uv:1": {}
     },
-    // VS Code specific customizations
     "customizations": {
         "vscode": {
-            // Extensions automatically installed when container starts
             "extensions": [
-                "ms-python.python", // Core Python language support
-                "ms-python.flake8", // Python linting for code quality
-                "ms-python.black-formatter", // Auto-formats Python code
-                "ms-python.isort", // Organizes Python imports
-                "ms-toolsai.jupyter", // Jupyter notebook support
-                "christian-kohler.path-intellisense", // Auto-completes file paths
-                "ms-vscode.vscode-json", // Enhanced JSON editing
-                "anthropic.claude-dev" // Claude AI coding assistant
+                "ms-python.python",
+                "ms-python.flake8", 
+                "ms-python.black-formatter",
+                "ms-python.isort",
+                "ms-toolsai.jupyter",
+                "christian-kohler.path-intellisense",
+                "ms-vscode.vscode-json"
             ],
-            // VS Code settings applied inside the container
             "settings": {
-                // Path to Python interpreter in the container
                 "python.defaultInterpreterPath": "/usr/local/bin/python",
-                // Enable Python linting (error checking)
                 "python.linting.enabled": true,
-                // Use flake8 as the linter
                 "python.linting.flake8Enabled": true,
-                // Use Black as the code formatter
                 "python.formatting.provider": "black",
-                // Auto-format files when saved
                 "editor.formatOnSave": true,
-                // Auto-organize imports when saved
                 "editor.codeActionsOnSave": {
                     "source.organizeImports": true
                 },
-                // Use zsh as default terminal in the container
                 "terminal.integrated.defaultProfile.linux": "zsh",
-                // Language-specific indentation settings
                 "[python]": {
-                    "editor.tabSize": 4,
-                    "editor.insertSpaces": true
-                },
-                "[json]": {
-                    "editor.tabSize": 4,
-                    "editor.insertSpaces": true
-                },
-                "[jsonc]": {
-                    "editor.tabSize": 4,
-                    "editor.insertSpaces": true
-                },
-                "[yaml]": {
                     "editor.tabSize": 4,
                     "editor.insertSpaces": true
                 }
             }
         }
     },
-    // Ports forwarded from container to your local machine
-    // 3000: React/Next.js dev server
-    // 8000: FastAPI/Django default
-    // 8080: Alternative web server
-    // 5000: Flask default
-    // 7860: Gradio default
-    "forwardPorts": [
-        3000,
-        8000,
-        8080,
-        5000,
-        7860
-    ],
-    // Command run after container is created (installs Python packages)
+    "forwardPorts": [8501, 8888],
     "postCreateCommand": "pip install --upgrade pip && pip install langchain langsmith langchain-community langchain-openai langchain-anthropic streamlit gradio fastapi uvicorn requests pandas numpy matplotlib seaborn jupyter notebook jupyterlab",
-    // User account to use inside the container (non-root for security)
     "remoteUser": "vscode"
 }

@@ -4,43 +4,39 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Quest is an AI development environment focused on Python, LangChain, and LangGraph applications. The project is structured as a simple Python package with demonstration code for LangChain integration.
+Quest is an AI development environment focused on Python and LangChain applications. The project is structured as a simple Python package with demonstration code for LangChain integration using Anthropic's Claude.
 
 ## Development Commands
 
 ### Core Development
-- `npm run dev` - Start Streamlit app on port 8501
-- `npm run jupyter` - Launch Jupyter Lab on port 8888
-- `npm run test` - Run pytest with coverage reporting
-- `npm run lint` - Format and lint code (black, isort, flake8)
-- `npm run format` - Format code only (black, isort)
+- `npm run dev` - Run the main LangChain demo (src/main.py)
 - `npm run clean` - Remove Python cache files and __pycache__ directories
-- `npm run security` - Run security checks with safety and bandit
 
-### Docker Development
-- `npm run docker:build` - Build development container
-- `npm run docker:run` - Run container with workspace mounted
-- ECR deployment commands available for AWS integration
+### Notifications
+- Commands for sending notifications via Claude CLI
+- Configuration stored in `.claude/commands/notify.yaml`
 
 ## Code Architecture
 
-### Structure
+### Structure  
 - `/src/` - Main Python source code
-  - `hello_langchain.py` - Main entry point and LangChain demonstration
-  - `__init__.py` - Package initialization
+  - `main.py` - Simple LangChain hello world demonstrating 4 key steps
+- `/.claude/` - Claude CLI configuration and commands
+  - `commands/` - Custom Claude commands including notification system
+- `/.github/` - GitHub Actions workflows for CI/CD
 
 ### Key Components
-- **LangChain Integration**: The project demonstrates basic LangChain usage including LLM initialization, prompt templates, and chain creation
+- **LangChain Integration**: The project demonstrates basic LangChain usage with Anthropic's Claude including LLM initialization, prompt templates, and chain creation
 - **Environment Configuration**: Uses python-dotenv for environment variable management (requires ANTHROPIC_API_KEY)
-- **Streamlit Integration**: Primary web interface framework (app.py referenced but not yet created)
+- **Claude CLI Integration**: Custom commands and notifications system
 
 ## Environment Requirements
 - Python >= 3.9.0
 - Node.js >= 18.0.0
 - Anthropic API key required for LangChain functionality
 
-## Testing and Quality
-- pytest for testing with coverage reporting
-- black and isort for code formatting
-- flake8 for linting
-- bandit and safety for security scanning
+## GitHub Actions
+- Automated CI/CD workflows
+- Security scanning
+- Issue management and labeling
+- Release automation
