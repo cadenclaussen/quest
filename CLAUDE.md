@@ -40,3 +40,4 @@ Quest is an AI development environment focused on Python and LangChain applicati
 - Security scanning
 - Issue management and labeling
 - Release automation
+- make sure and install all of my dependencies in my dev container, not on my local machine

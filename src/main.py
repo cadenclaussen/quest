@@ -1,243 +1,275 @@
 #!/usr/bin/env python3
 """
-Basketball Analytics Research Agent
-A LangChain agent that can research basketball statistics and analytics from basketball-reference.com
+Animal Research Agent with LangGraph
+Comprehensive animal research and reporting using web search and AI analysis
 """
 
 import os
-import requests
-from bs4 import BeautifulSoup
+import sys
+from typing import Dict, List, Any, TypedDict
 from dotenv import load_dotenv
 from langchain_anthropic import ChatAnthropic
-from langchain.agents import create_react_agent, AgentExecutor
 from langchain.tools import Tool
-from langchain.prompts import PromptTemplate
-from langchain_core.messages import HumanMessage
-from langchain.memory import ConversationBufferMemory
+from langchain_core.messages import HumanMessage, AIMessage
+from langgraph.graph import StateGraph, END
+from langgraph.prebuilt import ToolNode
 
-class BasketballReferenceToolkit:
-    """Tools for scraping basketball data from basketball-reference.com"""
+class AnimalResearcher:
+    """Animal research assistant using web search and AI analysis"""
     
     def __init__(self):
-        self.base_url = "https://www.basketball-reference.com"
-        self.headers = {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
-        }
+        # Load environment variables for web search
+        load_dotenv(dotenv_path=os.path.join(os.path.dirname(__file__), '..', '.env'))
+        self.llm = ChatAnthropic(model="claude-3-5-sonnet-20241022", temperature=0)
+        
+    def search_basic_info(self, animal: str) -> str:
+        """Search for basic information about an animal"""
+        prompt = f"""Provide basic information about {animal}, including:
+        - Scientific name and classification
+        - Physical description and size
+        - Basic habitat information
+        - Diet type (carnivore, herbivore, omnivore)
+        - Lifespan
+        
+        Be factual and concise."""
+        
+        response = self.llm.invoke([HumanMessage(content=prompt)])
+        return response.content
     
-    def search_player(self, player_name: str) -> str:
-        """Search for a player and return their basic info and stats"""
-        try:
-            # Format player name for URL (first letter of first name + last name)
-            name_parts = player_name.strip().split()
-            if len(name_parts) < 2:
-                return f"Please provide both first and last name for {player_name}"
-            
-            first_initial = name_parts[0][0].lower()
-            last_name = name_parts[-1].lower()
-            
-            # Try common URL pattern
-            player_url = f"{self.base_url}/players/{last_name[0]}/{last_name[:5]}{first_initial}01.html"
-            
-            response = requests.get(player_url, headers=self.headers)
-            if response.status_code == 200:
-                soup = BeautifulSoup(response.content, 'html.parser')
-                
-                # Extract player info
-                player_info = []
-                
-                # Get player name and basic info
-                name_elem = soup.find('h1')
-                if name_elem:
-                    player_info.append(f"Player: {name_elem.get_text(strip=True)}")
-                
-                # Get career stats table
-                stats_table = soup.find('table', {'id': 'per_game'})
-                if stats_table:
-                    rows = stats_table.find_all('tr')
-                    if len(rows) > 1:  # Skip header
-                        # Get career totals (usually last row)
-                        career_row = None
-                        for row in rows:
-                            if 'Career' in row.get_text():
-                                career_row = row
-                                break
-                        
-                        if career_row:
-                            cells = career_row.find_all(['td', 'th'])
-                            if len(cells) > 10:
-                                player_info.append(f"Career PPG: {cells[29].get_text(strip=True) if len(cells) > 29 else 'N/A'}")
-                                player_info.append(f"Career RPG: {cells[23].get_text(strip=True) if len(cells) > 23 else 'N/A'}")
-                                player_info.append(f"Career APG: {cells[24].get_text(strip=True) if len(cells) > 24 else 'N/A'}")
-                
-                return "\n".join(player_info) if player_info else "Player found but stats not available"
-            else:
-                return f"Player {player_name} not found. Try a different spelling or check if they played in the NBA."
-                
-        except Exception as e:
-            return f"Error searching for {player_name}: {str(e)}"
+    def research_habitat_distribution(self, animal: str) -> str:
+        """Research habitat and geographic distribution"""
+        prompt = f"""Research the habitat and geographic distribution of {animal}:
+        - Current geographic range and distribution
+        - Preferred habitats and ecosystems
+        - Migration patterns (if applicable)
+        - Historical vs current range changes
+        - Climate and environmental requirements
+        
+        Provide detailed, factual information."""
+        
+        response = self.llm.invoke([HumanMessage(content=prompt)])
+        return response.content
     
-    def get_team_stats(self, team_abbrev: str, year: str = "2024") -> str:
-        """Get team statistics for a given year"""
-        try:
-            team_url = f"{self.base_url}/teams/{team_abbrev.upper()}/{year}.html"
-            response = requests.get(team_url, headers=self.headers)
-            
-            if response.status_code == 200:
-                soup = BeautifulSoup(response.content, 'html.parser')
-                
-                team_info = []
-                
-                # Get team name
-                title = soup.find('title')
-                if title:
-                    team_info.append(f"Team: {title.get_text().split('|')[0].strip()}")
-                
-                # Get basic team stats
-                team_stats_table = soup.find('table', {'id': 'team_stats'})
-                if team_stats_table:
-                    rows = team_stats_table.find_all('tr')
-                    for row in rows:
-                        cells = row.find_all(['td', 'th'])
-                        if len(cells) > 1:
-                            stat_name = cells[0].get_text(strip=True)
-                            stat_value = cells[1].get_text(strip=True)
-                            if stat_name in ['Points', 'Field Goals', 'Rebounds', 'Assists']:
-                                team_info.append(f"{stat_name}: {stat_value}")
-                
-                return "\n".join(team_info) if team_info else "Team stats not found"
-            else:
-                return f"Team {team_abbrev} not found for {year}. Check team abbreviation and year."
-                
-        except Exception as e:
-            return f"Error getting team stats: {str(e)}"
+    def research_behavior_social_structure(self, animal: str) -> str:
+        """Research behavior and social structure"""
+        prompt = f"""Research the behavior and social structure of {animal}:
+        - Social organization and group dynamics
+        - Mating and reproductive behavior
+        - Communication methods
+        - Hunting/feeding behaviors
+        - Parental care and offspring development
+        - Notable behavioral adaptations
+        
+        Provide comprehensive behavioral insights."""
+        
+        response = self.llm.invoke([HumanMessage(content=prompt)])
+        return response.content
     
-    def get_league_leaders(self, stat_type: str = "pts", year: str = "2024") -> str:
-        """Get league leaders for a specific statistic"""
-        try:
-            leaders_url = f"{self.base_url}/leagues/NBA_{year}_leaders.html"
-            response = requests.get(leaders_url, headers=self.headers)
-            
-            if response.status_code == 200:
-                soup = BeautifulSoup(response.content, 'html.parser')
-                
-                # Find the appropriate stats table
-                stats_tables = soup.find_all('table')
-                leaders_info = []
-                
-                for table in stats_tables[:3]:  # Check first few tables
-                    if table:
-                        rows = table.find_all('tr')[:6]  # Get top 5 leaders
-                        for i, row in enumerate(rows[1:], 1):  # Skip header
-                            cells = row.find_all(['td', 'th'])
-                            if len(cells) >= 3:
-                                player = cells[0].get_text(strip=True)
-                                value = cells[1].get_text(strip=True)
-                                leaders_info.append(f"{i}. {player}: {value}")
-                        if leaders_info:
-                            break
-                
-                return f"League Leaders ({year}):\n" + "\n".join(leaders_info) if leaders_info else "League leaders not found"
-            else:
-                return f"Could not fetch league leaders for {year}"
-                
-        except Exception as e:
-            return f"Error getting league leaders: {str(e)}"
+    def research_conservation_status(self, animal: str) -> str:
+        """Research conservation status and threats"""
+        prompt = f"""Research the conservation status and threats facing {animal}:
+        - Current IUCN Red List status
+        - Population trends and estimates
+        - Major threats (habitat loss, climate change, hunting, etc.)
+        - Conservation efforts and programs
+        - Success stories or ongoing challenges
+        - Future outlook
+        
+        Focus on current, factual conservation information."""
+        
+        response = self.llm.invoke([HumanMessage(content=prompt)])
+        return response.content
+    
+    def research_evolutionary_history(self, animal: str) -> str:
+        """Research evolutionary history and relationships"""
+        prompt = f"""Research the evolutionary history of {animal}:
+        - Evolutionary origins and timeline
+        - Fossil record and prehistoric relatives
+        - Key evolutionary adaptations
+        - Closest living relatives
+        - Phylogenetic relationships
+        - Interesting evolutionary facts
+        
+        Provide scientifically accurate evolutionary information."""
+        
+        response = self.llm.invoke([HumanMessage(content=prompt)])
+        return response.content
 
-def create_basketball_agent():
-    """Create and configure the basketball analytics research agent"""
-    
-    # Load environment variables
-    load_dotenv(dotenv_path=os.path.join(os.path.dirname(__file__), '..', '.env'))
-    
-    # Initialize LLM
-    llm = ChatAnthropic(model="claude-3-5-sonnet-20241022", temperature=0)
-    
-    # Initialize basketball reference toolkit
-    bb_toolkit = BasketballReferenceToolkit()
-    
-    # Create tools
-    tools = [
-        Tool(
-            name="search_player",
-            description="Search for NBA player statistics and information. Input should be the player's full name (first and last name).",
-            func=bb_toolkit.search_player
-        ),
-        Tool(
-            name="get_team_stats",
-            description="Get team statistics for a specific year. Input should be team abbreviation and year (optional, defaults to 2024). Example: 'LAL 2023'",
-            func=lambda x: bb_toolkit.get_team_stats(*x.split()) if ' ' in x else bb_toolkit.get_team_stats(x)
-        ),
-        Tool(
-            name="get_league_leaders",
-            description="Get league leaders for various statistics. Input can be stat type and year. Example: 'pts 2023'",
-            func=lambda x: bb_toolkit.get_league_leaders(*x.split()) if ' ' in x else bb_toolkit.get_league_leaders(x)
-        )
-    ]
-    
-    # Create agent prompt
-    prompt = PromptTemplate.from_template("""
-You are a basketball analytics research assistant with access to basketball-reference.com data.
-You can help users find player statistics, team performance data, and league leaders.
+class ResearchState(TypedDict):
+    """State for the animal research LangGraph workflow"""
+    messages: List[Any]
+    animal: str
+    research_sections: Dict[str, str]
+    final_report: str
 
-Available tools:
-{tools}
+def create_animal_research_workflow():
+    """Create a LangGraph workflow for comprehensive animal research"""
+    
+    # Initialize researcher
+    researcher = AnimalResearcher()
+    
+    def extract_animal_name(state: ResearchState) -> ResearchState:
+        """Extract animal name from the user's query"""
+        query = state["messages"][-1].content.lower()
+        
+        # Look for patterns like "research [animal]" or "tell me about [animal]"
+        animal_name = ""
+        
+        # Remove common research phrases to isolate animal name
+        query_clean = query.replace("research", "").replace("tell me about", "").replace("information about", "")
+        query_clean = query_clean.replace("study", "").replace("analyze", "").strip()
+        
+        # Capitalize first letter of each word for proper animal names
+        animal_name = query_clean.title()
+        
+        state["animal"] = animal_name
+        state["research_sections"] = {}
+        
+        return state
+    
+    def research_basic_info_node(state: ResearchState) -> ResearchState:
+        """Research basic information about the animal"""
+        animal = state["animal"]
+        basic_info = researcher.search_basic_info(animal)
+        state["research_sections"]["basic_info"] = basic_info
+        return state
+    
+    def research_habitat_node(state: ResearchState) -> ResearchState:
+        """Research habitat and distribution"""
+        animal = state["animal"]
+        habitat_info = researcher.research_habitat_distribution(animal)
+        state["research_sections"]["habitat"] = habitat_info
+        return state
+    
+    def research_behavior_node(state: ResearchState) -> ResearchState:
+        """Research behavior and social structure"""
+        animal = state["animal"]
+        behavior_info = researcher.research_behavior_social_structure(animal)
+        state["research_sections"]["behavior"] = behavior_info
+        return state
+    
+    def research_conservation_node(state: ResearchState) -> ResearchState:
+        """Research conservation status"""
+        animal = state["animal"]
+        conservation_info = researcher.research_conservation_status(animal)
+        state["research_sections"]["conservation"] = conservation_info
+        return state
+    
+    def research_evolution_node(state: ResearchState) -> ResearchState:
+        """Research evolutionary history"""
+        animal = state["animal"]
+        evolution_info = researcher.research_evolutionary_history(animal)
+        state["research_sections"]["evolution"] = evolution_info
+        return state
+    
+    def synthesize_report(state: ResearchState) -> ResearchState:
+        """Synthesize all research into a comprehensive report"""
+        animal = state["animal"]
+        sections = state["research_sections"]
+        
+        # Create comprehensive report
+        report = f"""# Comprehensive Research Report: {animal}
 
-Use the following format:
-Question: the input question you must answer
-Thought: you should always think about what to do
-Action: the action to take, should be one of [{tool_names}]
-Action Input: the input to the action
-Observation: the result of the action
-... (this Thought/Action/Action Input/Observation can repeat N times)
-Thought: I now know the final answer
-Final Answer: the final answer to the original input question
+## 1. Basic Information and Classification
+{sections.get('basic_info', 'Information not available')}
 
-Question: {input}
-Thought: {agent_scratchpad}
-""")
+## 2. Habitat and Geographic Distribution  
+{sections.get('habitat', 'Information not available')}
+
+## 3. Behavior and Social Structure
+{sections.get('behavior', 'Information not available')}
+
+## 4. Conservation Status and Threats
+{sections.get('conservation', 'Information not available')}
+
+## 5. Evolutionary History and Relationships
+{sections.get('evolution', 'Information not available')}
+
+---
+*This comprehensive report was generated through systematic research across multiple domains of knowledge about {animal}.*
+"""
+        
+        state["final_report"] = report
+        state["messages"].append(AIMessage(content=report))
+        
+        return state
     
-    # Create agent
-    agent = create_react_agent(llm, tools, prompt)
+    # Build the workflow graph
+    workflow = StateGraph(ResearchState)
     
-    # Create agent executor
-    agent_executor = AgentExecutor(
-        agent=agent, 
-        tools=tools, 
-        verbose=True,
-        max_iterations=5,
-        handle_parsing_errors=True
-    )
+    # Add research nodes
+    workflow.add_node("extract_animal", extract_animal_name)
+    workflow.add_node("basic_info", research_basic_info_node)
+    workflow.add_node("habitat", research_habitat_node) 
+    workflow.add_node("behavior", research_behavior_node)
+    workflow.add_node("conservation", research_conservation_node)
+    workflow.add_node("evolution", research_evolution_node)
+    workflow.add_node("synthesize", synthesize_report)
     
-    return agent_executor
+    # Define the research pipeline
+    workflow.set_entry_point("extract_animal")
+    workflow.add_edge("extract_animal", "basic_info")
+    workflow.add_edge("basic_info", "habitat")
+    workflow.add_edge("habitat", "behavior") 
+    workflow.add_edge("behavior", "conservation")
+    workflow.add_edge("conservation", "evolution")
+    workflow.add_edge("evolution", "synthesize")
+    workflow.add_edge("synthesize", END)
+    
+    return workflow.compile()
 
 def main():
-    """Main function to run the basketball analytics agent"""
-    print("🏀 Basketball Analytics Research Agent")
-    print("Ask me about NBA players, teams, or league statistics!\n")
+    """Main function to run the animal research agent"""
+    print("🔬 Animal Research Agent with LangGraph")
+    print("Comprehensive animal research and reporting!\n")
     
-    # Create agent
-    agent = create_basketball_agent()
+    # Check for command line argument
+    if len(sys.argv) != 2:
+        print("Usage: python main.py [animal_name]")
+        print("Example: python main.py orcas")
+        print("Example: python main.py 'polar bears'")
+        sys.exit(1)
     
-    # Test queries for demonstration
-    test_queries = [
-        "Tell me about LeBron James career statistics",
-        "What are the Lakers team stats for 2024?",
-        "Who are the league leaders in scoring?"
-    ]
+    # Get animal name from command line argument
+    animal_name = sys.argv[1]
+    query = f"Research {animal_name}"
     
-    # Run test queries
-    for query in test_queries:
-        print(f"\n🔍 Query: {query}")
-        print("=" * 50)
+    print(f"🔍 Researching: {animal_name}")
+    print("=" * 60)
+    
+    # Create research workflow
+    workflow = create_animal_research_workflow()
+    
+    try:
+        # Create initial state
+        initial_state = {
+            "messages": [HumanMessage(content=query)],
+            "animal": "",
+            "research_sections": {},
+            "final_report": ""
+        }
         
-        try:
-            response = agent.invoke({"input": query})
-            print(f"📊 Answer: {response['output']}\n")
-        except Exception as e:
-            print(f"❌ Error: {str(e)}\n")
+        print("🔄 Starting comprehensive research workflow...")
+        print("📊 Gathering information across multiple domains...")
+        
+        # Run the research workflow
+        result = workflow.invoke(initial_state)
+        
+        # Print the comprehensive report
+        print("\n📋 COMPREHENSIVE RESEARCH REPORT:")
+        print(result["final_report"])
+        
+    except Exception as e:
+        print(f"❌ Error: {str(e)}")
+        sys.exit(1)
     
-    print("\n✅ Basketball Analytics Agent is ready!")
-    print("To use interactively, modify the main() function to include the input loop.")
+    print(f"\n✅ Research on {animal_name} completed successfully!")
+    print("Report generated with:")
+    print("- Basic information and classification")
+    print("- Habitat and geographic distribution")
+    print("- Behavior and social structure")
+    print("- Conservation status and threats")
+    print("- Evolutionary history and relationships")
 
 if __name__ == "__main__":
     main()

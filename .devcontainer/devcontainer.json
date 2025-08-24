@@ -1,6 +1,7 @@
 {
-    "name": "Quest",
-    "image": "mcr.microsoft.com/devcontainers/python:3.11",
+    "name": "Quest - Python LLM Development Environment",
+    "image": "python:3.12-slim-bookworm",
+    "runArgs": ["--env-file", "${localWorkspaceFolder}/.env"],
     "features": {
         "ghcr.io/devcontainers/features/git:1": {},
         "ghcr.io/devcontainers/features/github-cli:1": {},
@@ -11,7 +12,7 @@
         "ghcr.io/anthropics/devcontainer-features/claude-code:1.0": {},
         "ghcr.io/devcontainers/features/python:1": {
             "installTools": true,
-            "version": "3.11"
+            "version": "3.12"
         },
         "ghcr.io/devcontainers/features/common-utils:2": {
             "installZsh": true,
@@ -24,28 +25,38 @@
         "ghcr.io/devcontainers/features/aws-cli:1": {},
         "ghcr.io/va-h/devcontainers-features/uv:1": {}
     },
+    "onCreateCommand": "apt-get update && apt-get install -y build-essential python3-dev graphviz graphviz-dev pkg-config libcairo2-dev libpango1.0-dev libgdk-pixbuf2.0-dev",
+    "postCreateCommand": "pip install --upgrade pip && pip install -r requirements.txt",
     "customizations": {
         "vscode": {
             "extensions": [
                 "ms-python.python",
-                "ms-python.flake8",
                 "ms-python.black-formatter",
                 "ms-python.isort",
                 "ms-toolsai.jupyter",
+                "ms-python.vscode-pylance",
+                "charliermarsh.ruff",
+                "njpwerner.autodocstring",
+                "tamasfe.even-better-toml",
+                "ms-azuretools.vscode-docker",
                 "christian-kohler.path-intellisense",
                 "ms-vscode.vscode-json"
             ],
             "settings": {
+                "terminal.integrated.shell.linux": "/bin/bash",
                 "python.defaultInterpreterPath": "/usr/local/bin/python",
                 "python.linting.enabled": true,
-                "python.linting.flake8Enabled": true,
-                "python.formatting.provider": "black",
+                "python.linting.pylintEnabled": false,
+                "python.linting.ruffEnabled": true,
+                "python.analysis.typeCheckingMode": "basic",
+                "python.languageServer": "Pylance",
                 "editor.formatOnSave": true,
-                "editor.codeActionsOnSave": {
-                    "source.organizeImports": true
-                },
                 "terminal.integrated.defaultProfile.linux": "zsh",
                 "[python]": {
+                    "editor.codeActionsOnSave": {
+                        "source.organizeImports": "explicit"
+                    },
+                    "editor.defaultFormatter": "ms-python.black-formatter",
                     "editor.tabSize": 4,
                     "editor.insertSpaces": true
                 }
@@ -54,8 +65,9 @@
     },
     "forwardPorts": [
         8501,
-        8888
+        8888,
+        8000,
+        8080
     ],
-    "postCreateCommand": "pip install --upgrade pip && pip install langchain langsmith langchain-community langchain-openai langchain-anthropic streamlit gradio fastapi uvicorn requests pandas numpy matplotlib seaborn jupyter notebook jupyterlab",
     "remoteUser": "vscode"
 }
