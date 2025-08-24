@@ -5,6 +5,8 @@
     "main": "src/main.py",
     "scripts": {
         "dev": "python src/main.py",
+        "langgraph": "source venv/bin/activate && python src/langgraph_hello.py",
+        "install": "python3 -m venv venv && source venv/bin/activate && pip install -r requirements.txt",
         "clean": "find . -name '*.pyc' -delete && find . -name '__pycache__' -type d -exec rm -rf {} +"
     },
     "repository": {

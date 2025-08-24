@@ -21,7 +21,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "if [[ \"$OSTYPE\" == \"darwin\"* ]]; then uv run --no-project \"$HOME/.claude/commands/notify.py\"; fi"
+            "command": "if [[ \"$OSTYPE\" == \"darwin\"* ]]; then uv run --no-project \".claude/commands/notify.py\"; fi"
           }
         ]
       }

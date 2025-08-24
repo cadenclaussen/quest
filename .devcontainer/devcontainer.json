@@ -11,7 +11,7 @@
         "ghcr.io/anthropics/devcontainer-features/claude-code:1.0": {},
         "ghcr.io/devcontainers/features/python:1": {
             "installTools": true,
-            "version": "none"
+            "version": "3.11"
         },
         "ghcr.io/devcontainers/features/common-utils:2": {
             "installZsh": true,
@@ -28,7 +28,7 @@
         "vscode": {
             "extensions": [
                 "ms-python.python",
-                "ms-python.flake8", 
+                "ms-python.flake8",
                 "ms-python.black-formatter",
                 "ms-python.isort",
                 "ms-toolsai.jupyter",
@@ -52,7 +52,10 @@
             }
         }
     },
-    "forwardPorts": [8501, 8888],
+    "forwardPorts": [
+        8501,
+        8888
+    ],
     "postCreateCommand": "pip install --upgrade pip && pip install langchain langsmith langchain-community langchain-openai langchain-anthropic streamlit gradio fastapi uvicorn requests pandas numpy matplotlib seaborn jupyter notebook jupyterlab",
     "remoteUser": "vscode"
 }
