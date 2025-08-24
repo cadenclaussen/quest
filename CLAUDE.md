@@ -31,13 +31,13 @@ Quest is an AI development environment focused on Python, LangChain, and LangGra
 
 ### Key Components
 - **LangChain Integration**: The project demonstrates basic LangChain usage including LLM initialization, prompt templates, and chain creation
-- **Environment Configuration**: Uses python-dotenv for environment variable management (requires OPENAI_API_KEY)
+- **Environment Configuration**: Uses python-dotenv for environment variable management (requires ANTHROPIC_API_KEY)
 - **Streamlit Integration**: Primary web interface framework (app.py referenced but not yet created)
 
 ## Environment Requirements
 - Python >= 3.9.0
 - Node.js >= 18.0.0
-- OpenAI API key required for LangChain functionality
+- Anthropic API key required for LangChain functionality
 
 ## Testing and Quality
 - pytest for testing with coverage reporting

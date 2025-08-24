@@ -20,9 +20,24 @@ RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
         ca-certificates \
         gnupg \
         lsb-release \
-        software-properties-common
+        software-properties-common \
+        zsh
 
-# Note: Claude Code CLI installation skipped (install manually if needed)
+# Set zsh as the default shell for vscode user
+RUN chsh -s /usr/bin/zsh vscode
+
+# Install Node.js directly (simpler than nvm for containers)
+RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
+    apt-get install -y nodejs
+
+# Install AWS CLI v2
+RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-aarch64.zip" -o "awscliv2.zip" && \
+    unzip awscliv2.zip && \
+    ./aws/install && \
+    rm -rf awscliv2.zip aws/
+
+# Install Claude Code CLI via npm
+RUN npm install -g @anthropic-ai/claude-code
 
 # Upgrade Python package management tools to latest versions
 RUN pip install --upgrade pip setuptools wheel
@@ -51,6 +66,9 @@ RUN pip install \
 RUN mkdir -p /workspace
 WORKDIR /workspace
 
-# Ensure the vscode user (non-root) owns the workspace directory
+# Copy .zshrc configuration for vscode user from project root
+COPY .zshrc.container /home/vscode/.zshrc
+
+# Ensure the vscode user (non-root) owns the workspace directory and config files
 # Important for security - running as non-root user
-RUN chown -R vscode:vscode /workspace
+RUN chown -R vscode:vscode /workspace /home/vscode/.zshrc

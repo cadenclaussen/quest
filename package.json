@@ -11,10 +11,12 @@
         "format": "black src/ && isort src/",
         "docker:build": "docker build -t quest-dev -f .devcontainer/Dockerfile .",
         "docker:run": "docker run -it --rm -v $(pwd):/workspace quest-dev bash",
+        "docker:ecr:create-repo": "aws ecr create-repository --repository-name quest --region us-east-1",
         "docker:ecr:login": "aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin",
-        "docker:ecr:build": "docker build -t quest .",
+        "docker:ecr:build": "docker build -t quest -f .devcontainer/Dockerfile .",
         "docker:ecr:tag": "docker tag quest:latest ${ECR_REPOSITORY}:latest",
         "docker:ecr:push": "docker push ${ECR_REPOSITORY}:latest",
+        "docker:ecr:deploy": "npm run docker:ecr:login && npm run docker:ecr:build && npm run docker:ecr:tag && npm run docker:ecr:push",
         "clean": "find . -name '*.pyc' -delete && find . -name '__pycache__' -type d -exec rm -rf {} +",
         "security": "safety check && bandit -r src/"
     },

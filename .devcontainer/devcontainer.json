@@ -3,18 +3,15 @@
     "name": "Quest",
     // Tells VS Code to build the container using our custom Dockerfile
     "build": {
-        "dockerfile": "Dockerfile"
+        "dockerfile": "Dockerfile",
+        "context": ".."
     },
     // Pre-built features from Microsoft's dev container registry
     "features": {
         // Installs Git version control system
         "ghcr.io/devcontainers/features/git:1": {},
         // Installs GitHub CLI for repository management
-        "ghcr.io/devcontainers/features/github-cli:1": {},
-        // Installs Node.js (latest LTS version) for web development
-        "ghcr.io/devcontainers/features/node:1": {
-            "version": "lts"
-        }
+        "ghcr.io/devcontainers/features/github-cli:1": {}
     },
     // VS Code specific customizations
     "customizations": {
@@ -27,7 +24,8 @@
                 "ms-python.isort", // Organizes Python imports
                 "ms-toolsai.jupyter", // Jupyter notebook support
                 "christian-kohler.path-intellisense", // Auto-completes file paths
-                "ms-vscode.vscode-json" // Enhanced JSON editing
+                "ms-vscode.vscode-json", // Enhanced JSON editing
+                "anthropic.claude-dev" // Claude AI coding assistant
             ],
             // VS Code settings applied inside the container
             "settings": {
@@ -45,8 +43,8 @@
                 "editor.codeActionsOnSave": {
                     "source.organizeImports": true
                 },
-                // Use bash as default terminal in the container
-                "terminal.integrated.defaultProfile.linux": "bash",
+                // Use zsh as default terminal in the container
+                "terminal.integrated.defaultProfile.linux": "zsh",
                 // Language-specific indentation settings
                 "[python]": {
                     "editor.tabSize": 4,
@@ -81,7 +79,7 @@
         7860
     ],
     // Command run after container is created (installs Python packages)
-    "postCreateCommand": "pip install --upgrade pip && pip install langchain langsmith langchain-community langchain-openai langchain-anthropic langraph streamlit gradio fastapi uvicorn requests pandas numpy matplotlib seaborn jupyter notebook jupyterlab",
+    "postCreateCommand": "pip install --upgrade pip && pip install langchain langsmith langchain-community langchain-openai langchain-anthropic streamlit gradio fastapi uvicorn requests pandas numpy matplotlib seaborn jupyter notebook jupyterlab",
     // User account to use inside the container (non-root for security)
     "remoteUser": "vscode"
 }
